@@ -11,7 +11,7 @@ from backend.src.graph.state import VideoAuditState
 
 from backend.src.graph.nodes import(
     index_video_node,
-    audio_content_node
+    audit_content_node
 )
 
 def create_graph():
@@ -23,13 +23,13 @@ def create_graph():
     #initialize the graph with state schema
     workflow = StateGraph(VideoAuditState)
     #add the nodes
-    workflow.add.node("indexer", index_video_node)
-    workflow.add.node("auditor", audio_content_node)
+    workflow.add_node("indexer", index_video_node)
+    workflow.add_node("auditor", audit_content_node)
     #define the netry point : indes=xer
     workflow.set_entry_point("indexer")
     #define the edges
-    workflow.add.edge("indexer", "auditor")
-    workflow.add.edge  ("auditor", END)
+    workflow.add_edge("indexer", "auditor")
+    workflow.add_edge  ("auditor", END)
     #compile the graph
     app = workflow.compile()
     return   app

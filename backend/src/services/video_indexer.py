@@ -7,7 +7,7 @@ import time
 import logging
 import requests
 import yt_dlp
-from azure.identity import DefaultAzureCredential
+from azure.identity import ClientSecretCredential
 
 logger = logging.getLogger("video-indexer")
 
@@ -18,7 +18,11 @@ class VideoIndexerService:
         self.subscription_id = os.getenv("AZURE_SUBSCRIPTION_ID")
         self.resource_group = os.getenv("AZURE_RESOURCE_GROUP")
         self.vi_name = os.getenv("AZURE_VI_NAME", "brand-yt-project-vidindexer")
-        self.credential = DefaultAzureCredential()
+        self.credential = ClientSecretCredential(
+            tenant_id=os.getenv("AZURE_TENANT_ID"),
+            client_id=os.getenv("AZURE_CLIENT_ID"),
+            client_secret=os.getenv("AZURE_CLIENT_SECRET")
+        )
 
     def get_access_token(self):
         '''
@@ -59,10 +63,14 @@ class VideoIndexerService:
         logger.info(f"Downloading Youtube video : {url}")
 
         ydl_opts = {
-            "format": 'best[ext=mp4]',
+            "format": 'best',
             'outtmpl': output_path,
-            'quiet': True,
-            'overwrites': True
+            'quiet': False,
+            'no_warnings': False,
+            'extractor_args': {'youtube': {'player_client': ['android', 'web']}},
+            'http_headers': {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+            }
         }
 
         try:
@@ -97,14 +105,15 @@ class VideoIndexerService:
 
         if response.status_code != 200:
             raise Exception(f"Azure Upload Failed : {response.text}")
-        
+        return response.json().get("id")
+
     def wait_for_processing(self,video_id):
         logger.info(f"Waiting for the video {video_id} to process...")
         while True:
             arm_token = self.get_access_token()
             vi_token = self.get_account_token(arm_token)
 
-            url = f"https://api.videoindexer.ai/{self.location}/Accounts/{self.account_id}/Videos"
+            url = f"https://api.videoindexer.ai/{self.location}/Accounts/{self.account_id}/Videos/{video_id}/Index"
             params = {"accessToken" : vi_token}
             response = requests.get(url,params=params)
             data = response.json()
