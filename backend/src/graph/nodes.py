@@ -31,6 +31,10 @@ def index_video_node(state:VideoAuditState) -> Dict[str,Any]:
     video_url = state.get("video_url")
     video_id_input = state.get("video_id","vid_demo")
 
+    if state.get("transcript"):
+        logger.info("----[Node:Indexer] Transcript already provided, skipping Video Indexer.")
+        return {}
+
     logger.info(f"----[Node:Indexer] Processing : {video_url}")
 
     local_filename = "temp_audit_video.mp4"
