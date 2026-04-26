@@ -31,10 +31,7 @@ def run_cli_simulation():
         "video_url" : "https://youtu.be/dT7S75eYhcQ",
         "video_id" : f"vid_{session_id[:8]}",
         "compliance_results" : [],
-        "errors" : [],
-        "transcript": "This video promotes our new energy drink. It gives you wings and makes you 10x more productive. Doctors recommend it daily. Buy now and get 50% off, limited time only!",
-        "ocr_text": ["SALE 50% OFF", "DOCTOR RECOMMENDED", "LIMITED TIME"],
-        "video_metadata": {"duration": "00:02:00", "platform": "youtube"}
+        "errors" : []
     }
 
     print("\n-----Initializing workflow.......")
