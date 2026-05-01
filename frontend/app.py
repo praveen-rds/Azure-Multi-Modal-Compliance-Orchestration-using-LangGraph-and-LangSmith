@@ -6,7 +6,7 @@ Calls the FastAPI /audit endpoint and displays the compliance report.
 import streamlit as st
 import requests
 
-API_URL = "http://127.0.0.1:8000"
+API_URL = "https://brand-guardian-api.greenflower-a2ffbc8a.eastus.azurecontainerapps.io"
 
 # Page config
 st.set_page_config(
